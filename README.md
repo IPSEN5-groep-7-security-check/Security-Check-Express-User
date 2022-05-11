@@ -1,5 +1,9 @@
 # Security-Check-Express-User
 
+# start api
+
+node server.js
+
 ## submodules
 
 docs: https://git-scm.com/book/en/v2/Git-Tools-Submodules
