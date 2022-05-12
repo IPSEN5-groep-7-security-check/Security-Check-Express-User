@@ -1,0 +1,82 @@
+[
+  {
+    "_id": "541afdd3-169a-4308-b53a-8dca837a8277",
+    "colId": "98dffcda-ad08-4f15-a199-c50d28602c01",
+    "containerId": "",
+    "name": "Retrieve assessment",
+    "url": "http://localhost:8080/api/v1/analyze?host=twitter.com",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2022-05-11T15:31:18.169Z",
+    "modified": "2022-05-11T15:32:31.577Z",
+    "headers": [
+      {
+        "name": "Accept",
+        "value": "application/json"
+      }
+    ],
+    "params": [
+      {
+        "name": "host",
+        "value": "twitter.com",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  },
+  {
+    "_id": "4e5a2d80-24a8-4efd-bb5c-567626c6d45d",
+    "colId": "98dffcda-ad08-4f15-a199-c50d28602c01",
+    "containerId": "",
+    "name": "Invoke assessment",
+    "url": "http://localhost:8080/api/v1/analyze?host=twitter.com&rescan=false",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2022-05-11T15:32:35.583Z",
+    "modified": "2022-05-11T15:33:04.729Z",
+    "headers": [
+      {
+        "name": "Accept",
+        "value": "application/json"
+      }
+    ],
+    "params": [
+      {
+        "name": "host",
+        "value": "twitter.com",
+        "isPath": false
+      },
+      {
+        "name": "rescan",
+        "value": "false",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  },
+  {
+    "_id": "dc62086e-becb-4d05-8f40-8f3a86de4330",
+    "colId": "98dffcda-ad08-4f15-a199-c50d28602c01",
+    "containerId": "",
+    "name": "Retrieve test results",
+    "url": "http://localhost:8080/api/v1/getScanResults?scan=26364078",
+    "method": "GET",
+    "sortNum": 15000,
+    "created": "2022-05-11T15:33:12.375Z",
+    "modified": "2022-05-11T15:34:54.969Z",
+    "headers": [
+      {
+        "name": "Accept",
+        "value": "application/json"
+      }
+    ],
+    "params": [
+      {
+        "name": "scan",
+        "value": "26364078",
+        "isPath": false
+      }
+    ],
+    "tests": []
+  }
+]
