@@ -18,9 +18,11 @@ const email = require("./routes/email");
 const cors = require("cors");
 
 const fetch = (...args) =>
-    import("node-fetch").then(({ default: fetch }) => fetch(...args));
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const express = require("express");
 const app = express();
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 app.use(cors({ origin: true, credentials: true }));
 
@@ -31,14 +33,14 @@ app.use(function (req, res, next) {
 
   // Request methods you wish to allow
   res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
 
   // Request headers you wish to allow
   res.setHeader(
-      "Access-Control-Allow-Headers",
-      "X-Requested-With,content-type"
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
   );
 
   // Set to true if you need the website to include cookies in the requests sent
@@ -63,21 +65,22 @@ app.use("/users", users);
 app.use("/pdf", pdf);
 app.use("/sendemail", email);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+// I commented this out because it didn't work
+// // catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
 
-// error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+// // error handler
+// app.use(function (err, req, res, next) {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get("env") === "development" ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  //  res.render("error");
-});
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render("error");
+// });
 
 // INVOKE ASSESSMENT
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#invoke-assessment
@@ -100,14 +103,30 @@ app.post("/api/v1/analyze", async (req, res) => {
   const host = req.query.host;
   const rescan = req.query.rescan || false;
   const moz = await fetch(
-      `${MOZILLA_API_URL}/analyze?host=${host}&hidden=true&rescan=${rescan}`,
-      {
-        method: "POST",
-      }
+    `${MOZILLA_API_URL}/analyze?host=${host}&hidden=true&rescan=${rescan}`,
+    {
+      method: "POST",
+    }
   );
   const json = await moz.json();
-  res.json(json);
-  // TODO: log that the scan was invoked
+
+  // Log that the user has started a scan
+  try {
+    prisma.scanLog
+      .create({
+        data: {
+          ip: req.ip,
+          hostname: host,
+          completed: json.state === "FINISHED" ? true : false,
+          completedAt: json.state === "FINISHED" ? new Date() : null,
+        },
+      })
+      .then(() => {
+        res.send(json);
+      });
+  } catch (error) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 // RETRIEVE ASSESSMENT
@@ -139,7 +158,14 @@ app.get("/api/v1/getScanResults", async (req, res) => {
   // TODO: modify the response body to only include preview data
   const json = await moz.json();
   res.json(json);
-  // TODO: log that the scan has been completed
+  // TODO: consider logging the user's ip and hostname
+  // const scan = await prisma.scanLog.update({
+  //   where: { ip: req.ip, completed: false, hostname: host }, // TODO: get scanId from request
+  //   data: {
+  //     completedAt: new Date(),
+  //     completed: true,
+  //   },
+  // });
 });
 
 app.listen(PORT, function () {
