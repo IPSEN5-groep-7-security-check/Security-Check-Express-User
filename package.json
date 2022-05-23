@@ -1,14 +1,15 @@
 {
   "dependencies": {
-    "express": "^4.18.1",
-    "node-fetch": "^3.2.4",
+    "@prisma/client": "^3.14.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "^3.1.8",
+    "express": "^4.18.1",
     "html-pdf": "^3.0.1",
     "http-errors": "~1.6.3",
     "json2html": "^0.0.8",
     "morgan": "~1.9.1",
+    "node-fetch": "^3.2.4",
     "node-json2html": "^2.2.2",
     "nodemailer-mock": "^1.5.12",
     "pdfkit": "^0.13.0",
@@ -17,16 +18,17 @@
     "pug": "3.0.1"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "name": "security-check-express-user",
   "description": "",
   "version": "1.0.0",
   "main": "server.js",
   "devDependencies": {
-    "nodemon": "^2.0.16",
     "cors": "^2.8.5",
     "nodemailer": "^6.7.5",
+    "nodemon": "^2.0.16",
+    "prisma": "^3.14.0",
     "tailwindcss": "^3.0.24"
   },
   "repository": {
