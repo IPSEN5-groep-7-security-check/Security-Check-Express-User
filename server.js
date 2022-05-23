@@ -1,5 +1,4 @@
-// TODO: error handling
-// TODO: convert to TS
+// TODO: better error handling
 // TODO: project organization
 // TODO: add tests
 // TODO: handle imports better
@@ -82,6 +81,30 @@ app.use("/sendemail", email);
 //   res.render("error");
 // });
 
+async function isHostnameBanned(host) {
+  const bannedHostname = await prisma.hostnameBlacklist.findUnique({
+    where: {
+      hostname: host,
+    },
+  });
+  return bannedHostname ? true : false;
+}
+
+async function isIPBanned(ip) {
+  const bannedIp = await prisma.iPBlacklist.findUnique({
+    where: {
+      ip: ip,
+    },
+  });
+  if (!bannedIp) {
+    return false;
+  }
+  if (bannedIp.expiresAt > Date.now()) {
+    return true;
+  }
+  return false;
+}
+
 // INVOKE ASSESSMENT
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#invoke-assessment
 // Used to invoke a new scan of a website. By default, the HTTP Observatory
@@ -98,34 +121,22 @@ app.use("/sendemail", email);
 //     by getRecentScans
 //     rescan - setting to "true" forces a rescan of a site
 app.post("/api/v1/analyze", async (req, res) => {
-  // TODO: check hostname blacklist and IP blacklist
-  // TODO: check if the user's ip has scans remaining
   const host = req.query.host;
+  const ip = req.ip;
   const rescan = req.query.rescan || false;
-  const moz = await fetch(
-    `${MOZILLA_API_URL}/analyze?host=${host}&hidden=true&rescan=${rescan}`,
-    {
-      method: "POST",
-    }
-  );
-  const json = await moz.json();
-
-  // Log that the user has started a scan
-  try {
-    prisma.scanLog
-      .create({
-        data: {
-          ip: req.ip,
-          hostname: host,
-          completed: json.state === "FINISHED" ? true : false,
-          completedAt: json.state === "FINISHED" ? new Date() : null,
-        },
-      })
-      .then(() => {
-        res.send(json);
-      });
-  } catch (error) {
-    res.status(500).json({ error: e.message });
+  if (await isIPBanned(ip)) {
+    res.status(403).send({ error: "Client IP is banned" });
+  } else if (await isHostnameBanned(host)) {
+    res.status(400).send({ error: `The hostname ${host} is not allowed` });
+  } else {
+    const observatoryRes = await fetch(
+      `${MOZILLA_API_URL}/analyze?host=${host}&hidden=true&rescan=${rescan}`,
+      {
+        method: "POST",
+      }
+    );
+    const json = await observatoryRes.json();
+    res.send(json);
   }
 });
 
@@ -138,9 +149,26 @@ app.post("/api/v1/analyze", async (req, res) => {
 // host - hostname (required)
 app.get("/api/v1/analyze", async (req, res) => {
   const host = req.query.host;
-  const moz = await fetch(`${MOZILLA_API_URL}/analyze?host=${host}`);
-  const json = await moz.json();
-  res.json(json);
+  const observatoryRes = await fetch(`${MOZILLA_API_URL}/analyze?host=${host}`);
+  const json = await observatoryRes.json();
+  // We use upsert because we only want to record the log if it doesn't exist
+  // already. The update object is empty because we do not want to update an
+  // existing log entry.
+  await prisma.scanLog.upsert({
+    where: {
+      observatoryScanId_ip: {
+        ip: req.ip,
+        observatoryScanId: json.scan_id,
+      },
+    },
+    update: {},
+    create: {
+      ip: req.ip,
+      hostname: host,
+      observatoryScanId: json.scan_id,
+    },
+  });
+  res.send(json);
 });
 
 // RETRIEVE TEST RESULTS
@@ -154,18 +182,15 @@ app.get("/api/v1/analyze", async (req, res) => {
 // scan - scan_id number from the scan object
 app.get("/api/v1/getScanResults", async (req, res) => {
   const scanId = req.query.scan;
-  const moz = await fetch(`${MOZILLA_API_URL}/getScanResults?scan=${scanId}`);
+  const observatoryRes = await fetch(
+    `${MOZILLA_API_URL}/getScanResults?scan=${scanId}`
+  );
+  const json = await observatoryRes.json();
+
   // TODO: modify the response body to only include preview data
-  const json = await moz.json();
-  res.json(json);
-  // TODO: consider logging the user's ip and hostname
-  // const scan = await prisma.scanLog.update({
-  //   where: { ip: req.ip, completed: false, hostname: host }, // TODO: get scanId from request
-  //   data: {
-  //     completedAt: new Date(),
-  //     completed: true,
-  //   },
-  // });
+  const previewData = json;
+
+  res.send(previewData);
 });
 
 app.listen(PORT, function () {
