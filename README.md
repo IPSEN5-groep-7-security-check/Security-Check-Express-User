@@ -9,7 +9,9 @@ npm install
 node server.js
 ```
 
-# Init Prisma submodule
+# Prisma & Database
+
+## Init Prisma git submodule
 
 docs: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 
@@ -21,7 +23,7 @@ git submodule update --init --recursive
 see difference prisma: git diff --cached --submodule
 ```
 
-# Connect to Planetscale database
+## Connect to Planetscale database
 
 1. [Install](https://github.com/planetscale/cli#installation) the pscale commandline tool
 
@@ -31,23 +33,37 @@ see difference prisma: git diff --cached --submodule
     pscale auth login
     ```
 
-3. Run local proxy
+3. Switch to the `ipsen5` organization if you haven't already
 
     ```sh
-    pscale connect ipsen5 --port 3309
+    pscale org switch ipsen5
     ```
 
-4. Generate prisma client if you haven't already
+4. Run local proxy for the `ipsen5` database `develop` branch.
+
+    ```sh
+    pscale connect ipsen5 develop --port 3309
+    ```
+
+5. Generate prisma client if you haven't already
 
     ```sh
     npx prisma generate
     ```
 
+## Useful Prisma commands
 
-# View data
+### View data
 
 ```sh
 npx prisma studio
+```
+
+## Reset the database
+
+```sh
+npx prisma migrate reset
+npx prisma db push
 ```
 
 # Overwegingen
