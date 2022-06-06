@@ -4,21 +4,21 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body class="container">
- <img src="/images/logo.png" width="300" height="300">
-<main>
-    <div class="jumbotron">
-        <p>Welcome to templating using EJS</p>
-        <h1><%= data.end_time  %></h1>
-        <h1><%= data.grade  %></h1>
-        <h1><%= data.hidden  %></h1>
-        <h1><%= data.response_headers  %></h1>
-        <h1><%= data.scan_id  %></h1>
-        <h1><%= data.score  %></h1>
 
-    </div>
+    <main>
+        <div class="jumbotron">
+            <h1>start_time: <%= data.data.start_time  %></h1>
+            <h1>end_time: <%= data.data.end_time  %></h1>
+            <h1>grade: <%= data.data.grade  %></h1>
+            <h1>scan_id: <%= data.data.scan_id  %></h1>
+            <h1>score: <%= data.data.score  %></h1>
+            <h1>tests_failed: <%= data.data.tests_failed  %></h1>
+            <h1>tests_passed: <%= data.data.tests_passed %></h1>
+            <h1>tests_quantity: <%= data.data.tests_quantity  %></h1>
+        </div>
 
 
-</main>
+    </main>
 
 
 </body>

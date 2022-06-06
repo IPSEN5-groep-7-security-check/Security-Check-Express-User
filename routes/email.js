@@ -1,36 +1,45 @@
 const express = require('express')
 const router = express.Router()
-var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
+const axios = require("axios");
 
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
     auth: {
-        user: 'EMAIL',
-        pass: 'PASSWORD'
+        user: 'getbigmarketingresultaat@gmail.com',
+        pass: 'mrdpriigoykjiada'
     }
 });
 
 router.post('/', (req, res) => {
-    // var attachment = (typeof req.body.attachment !="undefined") ? req.body.attachment : ''; test
-    var mailOptions = {
-        from: 'EMAIL',
-        to: req.body.to,
-        subject: req.body.subject,
-        text: req.body.text,
-        attachments: [
-            {   // use URL as an attachment
-                filename: 'Resultaten.pdf',
-                path: 'PATH_To_RESULTATENPDF'
-            }]
+    axios.post("http://localhost:8080/pdf", {host: req.body.host}).then(function (response) {
+        const mailOptions = {
+            from: 'getbigmarketingresultaat@gmail.com',
+            to: req.body.email,
+            subject: "Uw scan resultaten",
+            text: "Beste " + req.body.name
+            ,
+            attachments: [
+                {   // use URL as an attachment
+                    filename: 'Resultaten.pdf',
+                    path: 'pdf/resultaten_'+ response.data.scan_id +'.pdf'
+                }]
         };
 
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-        }
-    });
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error)
+                res.send(error)
+            } else {
+                res.send({"text" : 'Email sent: ' + info.response})
+                console.log('Email sent: ' + info.response);
+            }
+        });
+    })
+
+
 })
 
 module.exports = router
