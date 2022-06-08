@@ -23,6 +23,7 @@ const app = express();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const session = require('express-session');
+app.use(express.static('public'))
 
 // use session middleware
 app.use(session({
@@ -61,7 +62,8 @@ app.use(function (req, res, next) {
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-app.use(express.static(__dirname + "public/images"));
+
+
 
 app.use(logger("dev"));
 app.use(express.json());

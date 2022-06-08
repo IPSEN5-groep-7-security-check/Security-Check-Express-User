@@ -1,22 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+
+    <style scoped>
+        body {
+            font-weight: 400;
+            font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background-color: #fafafa;
+        }
+
+        p{
+            text-align: center;
+        }
+
+        .styled-table {
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.9em;
+            font-family: sans-serif;
+            min-width: 400px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+        }
+        .styled-table thead tr {
+            background-color: #F597A9;
+            color: #ffffff;
+            text-align: left;
+        }
+        .styled-table th,
+        .styled-table td {
+            padding: 12px 15px;
+        }
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 2px solid #F597A9;
+        }
+        .styled-table tbody tr.active-row {
+            font-weight: bold;
+            color: #F597A9;
+        }
+
+    </style>
 </head>
 <body class="container">
 
     <main>
-        <div class="jumbotron">
-            <h1>start_time: <%= data.data.start_time  %></h1>
-            <h1>end_time: <%= data.data.end_time  %></h1>
-            <h1>grade: <%= data.data.grade  %></h1>
-            <h1>scan_id: <%= data.data.scan_id  %></h1>
-            <h1>score: <%= data.data.score  %></h1>
-            <h1>tests_failed: <%= data.data.tests_failed  %></h1>
-            <h1>tests_passed: <%= data.data.tests_passed %></h1>
-            <h1>tests_quantity: <%= data.data.tests_quantity  %></h1>
-        </div>
+        <p>Beste,<br><br>Hieronder in de tabel staan de volledige resultaten van de security check.</p>
 
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Test</th>
+                <th>Uitslag</th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Begin Tijd Scan</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.start_time  %></td>
+                </tr>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Eind Tijd Scan</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.end_time  %></td>
+                </tr>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Scan ID</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.scan_id  %></td>
+                </tr>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Score</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.score  %></td>
+                </tr>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Aantal Testen Uitgevoerd</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.tests_quantity  %></td>
+                </tr>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Testen Gelukt</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.tests_passed  %></td>
+                </tr>
+                <tr class="table__row">
+                    <td class="table__content" data-heading="Test">Testen Gefaald</td>
+                    <td class="table__content" data-heading="Uitslag"><%= data.data.tests_failed  %></td>
+                </tr>
+            </tbody>
+        </table>
 
     </main>
 
