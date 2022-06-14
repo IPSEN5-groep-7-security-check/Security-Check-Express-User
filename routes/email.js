@@ -16,8 +16,11 @@ const transporter = nodemailer.createTransport({
 
 router.post('/', (req, res) => {
     let path = null;
+    let encryptedData = req.body;
+    // let decryptedDtaFromAngular = decryptedData(encryptedData);
+    // console.log("DECRYPTED-DATA: " + decryptedDtaFromAngular);
     axios.post("http://localhost:8080/pdf", {host: req.body.host}).then(async function (response) {
-        path = response.data.scan_id
+        path = response.data.scan_id;
 
     }).then(() => {
         if(fs.existsSync('pdf/resultaten_'+ path +'.pdf')){
@@ -28,7 +31,7 @@ router.post('/', (req, res) => {
                 text: "Beste " + req.body.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
                 attachments: [
                     {
-                        filename: 'Resultaten.pdf',
+                        filename: 'Test-Resultaten\: ' +"'"+ req.body.host +"'"+ '.pdf',
                         path: 'pdf/resultaten_'+ path +'.pdf'
                     }]
             };
