@@ -23,7 +23,7 @@ const app = express();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const session = require('express-session');
-app.use(express.static('public'))
+app.use(express.static('!public'))
 
 // use session middleware
 app.use(session({
