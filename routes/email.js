@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
                 attachments: [
                     {
                         filename: 'Resultaten.pdf',
-                        path: 'pdf/resultaten_'+ req.body.host +'.pdf'
+                        path: 'pdf/resultaten_'+ path +'.pdf'
                     }]
             };
             sendmail(mailOptions, res)

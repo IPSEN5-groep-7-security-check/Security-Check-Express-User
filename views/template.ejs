@@ -18,7 +18,7 @@
             margin: 25px 0;
             font-size: 0.9em;
             font-family: sans-serif;
-            min-width: 400px;
+            min-width: 300px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
             width: 100%;
         }
@@ -29,7 +29,7 @@
         }
         .styled-table th,
         .styled-table td {
-            padding: 12px 15px;
+            padding: 10px 13px;
         }
         .styled-table tbody tr {
             border-bottom: 1px solid #dddddd;
@@ -64,35 +64,101 @@
             <tbody>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Begin Tijd Scan</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.start_time  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.start_time  %></td>
                 </tr>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Eind Tijd Scan</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.end_time  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.end_time  %></td>
                 </tr>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Scan ID</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.scan_id  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.scan_id  %></td>
                 </tr>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Score</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.score  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.score  %></td>
                 </tr>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Aantal Testen Uitgevoerd</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.tests_quantity  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.tests_quantity  %></td>
                 </tr>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Testen Gelukt</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.tests_passed  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.tests_passed  %></td>
                 </tr>
                 <tr class="table__row">
                     <td class="table__content" data-heading="Test">Testen Gefaald</td>
-                    <td class="table__content" data-heading="Uitslag"><%= data.data.tests_failed  %></td>
+                    <td class="table__content" data-heading="Uitslag"><%= analyzeData.data.tests_failed  %></td>
                 </tr>
             </tbody>
         </table>
 
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Test</th>
+                <th>Uitslag</th>
+                <th>Omschrijving</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Content Security Policy</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["content-security-policy"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["content-security-policy"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Contribute</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["contribute"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["contribute"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Cookies</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["cookies"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["cookies"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Cross Origin Resource Sharing</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["cross-origin-resource-sharing"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["cross-origin-resource-sharing"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Public Key Pinning</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["public-key-pinning"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["public-key-pinning"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Redirection</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["redirection"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["redirection"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Strict Transport Security</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["strict-transport-security"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["strict-transport-security"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">Subresource Integrity</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["subresource-integrity"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["subresource-integrity"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">X Content Type Options</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["x-content-type-options"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["x-content-type-options"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">X Frame Options</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["x-frame-options"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["x-frame-options"].score_description  %></td>
+            </tr>
+            <tr class="table__row">
+                <td class="table__content" data-heading="Test">X XSS Protection</td>
+                <td class="table__content" data-heading="Uitslag"><%= resultData.data["x-xss-protection"].pass  %></td>
+                <td class="table__content" data-heading="Omschrijving"><%= resultData.data["x-xss-protection"].score_description  %></td>
+            </tr>
+            </tbody>
+        </table>
     </main>
 
 
