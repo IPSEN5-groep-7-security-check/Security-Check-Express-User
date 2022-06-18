@@ -44,5 +44,5 @@ Thumbs.db
 !package-lock.json
 yarn.lock
 pnpm-lock.yaml
-privatykey.key
+privateKey.key.pem
 .env

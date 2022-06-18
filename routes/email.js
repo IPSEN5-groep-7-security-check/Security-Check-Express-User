@@ -4,7 +4,8 @@ const nodemailer = require('nodemailer');
 const axios = require("axios");
 const fs = require("fs");
 const crypto = require("crypto");
-
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -15,42 +16,50 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-router.post('/', (req, res) => {
+function emailPdfGenerator(encryptedData) {
+    if (fs.existsSync('pdf/resultaten_' + path + '.pdf')) {
+        const mailOptions = {
+            from: 'getbigmarketingresultaat@gmail.com',
+            to: encryptedData.email,
+            subject: "Uw scan resultaten",
+            text: "Beste " + encryptedData.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
+            attachments: [
+                {
+                    filename: 'Test-Resultaten\: ' + "'" + encryptedData.host + "'" + '.pdf',
+                    path: 'pdf/resultaten_' + path + '.pdf'
+                }]
+        };
+        sendmail(mailOptions, res)
+    } else {
+        axios.post("http://localhost:8080/sendemail", req.body).then(r => {
+
+        })
+    }
+}
+
+router.post('/', async (req, res) => {
     let path = null;
-    let encryptedData = req.body;
-    let privateKey = fs.readFileSync("privatykey.key", "utf8");
-    let toDecryptData = encryptedData.toString();
-    console.log("toDecryptData::: " + toDecryptData);
-    decryptedDataFromAngular(toDecryptData, privateKey);
-    console.log("DECRYPTED-DATA: " + decryptedDataFromAngular);
+    const encryptedData = req.body;
+    console.log("RECEIVED ENCRYPTED BODY: " + encryptedData);
+
+    const privateKey = fs.readFileSync("privateKey.key.pem", "utf8");
+    console.log("toDecryptData::: " + encryptedData);
+
+    const decryptedData = decryptedDataFromAngular(encryptedData, privateKey);
+    console.log("DECRYPTED-DATA: " + decryptedData);
     axios.post("http://localhost:8080/pdf", {host: encryptedData.host}).then(async function (response) {
         path = response.data.scan_id;
 
     }).then(() => {
-        if(fs.existsSync('pdf/resultaten_'+ path +'.pdf')){
-            const mailOptions = {
-                from: 'getbigmarketingresultaat@gmail.com',
-                to: encryptedData.email,
-                subject: "Uw scan resultaten",
-                text: "Beste " + encryptedData.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
-                attachments: [
-                    {
-                        filename: 'Test-Resultaten\: ' +"'"+ encryptedData.host +"'"+ '.pdf',
-                        path: 'pdf/resultaten_'+ path +'.pdf'
-                    }]
-            };
-            sendmail(mailOptions, res)
-        }else{
-            axios.post("http://localhost:8080/sendemail", req.body).then(r => {
-
-            })
-        }
+        emailPdfGenerator(encryptedData);
     });
 })
 
 function decryptedDataFromAngular(encryptedData, privateKey) {
-    encryptedData = Buffer.from(encryptedData, "base64");
-    console.log("ENCRYPTED DATA 2222:::: " + encryptedData.toString());
+    // encryptedData = Buffer.from(encryptedData, "base64");
+    const toDecryptData = JSON.parse(encryptedData);
+    // console.log("ENCRYPTED DATA 2222:::: " + encryptedData);
+    console.log("ENCRYPTED DATA 2222:::: " + body);
     const decryptedData = crypto.privateDecrypt(
         {
             key: privateKey,
@@ -60,7 +69,7 @@ function decryptedDataFromAngular(encryptedData, privateKey) {
             padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
             oaepHash: "sha256",
         },
-        encryptedData
+        toDecryptData
     );
     console.log("decrypted data: ", decryptedData.toString());
     console.log("DE RAW DATA" + decryptedData);
