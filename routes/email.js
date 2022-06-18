@@ -4,35 +4,48 @@ const nodemailer = require('nodemailer');
 const axios = require("axios");
 const fs = require("fs");
 const crypto = require("crypto");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
         user: 'getbigmarketingresultaat@gmail.com',
-        pass: 'mrdpriigoykjiada'
+        pass: 'onsMooiWachtwoord'
     }
 });
 
+function fillPdfFileWithRightInfo(encryptedData) {
+    const mailOptions = {
+        from: 'getbigmarketingresultaat@gmail.com',
+        to: encryptedData.email,
+        subject: "Uw scan resultaten",
+        text: "Beste " + encryptedData.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
+        attachments: [
+            {
+                filename: 'Test-Resultaten\: ' + "'" + encryptedData.host + "'" + '.pdf',
+                path: 'pdf/resultaten_' + path + '.pdf'
+            }]
+    };
+    return mailOptions;
+}
+
+function sendmail(mailOptions, res){
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error)
+            res.send(error)
+        } else {
+            res.send({"text" : 'Email sent: ' + info.response})
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
 function emailPdfGenerator(encryptedData) {
     if (fs.existsSync('pdf/resultaten_' + path + '.pdf')) {
-        const mailOptions = {
-            from: 'getbigmarketingresultaat@gmail.com',
-            to: encryptedData.email,
-            subject: "Uw scan resultaten",
-            text: "Beste " + encryptedData.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
-            attachments: [
-                {
-                    filename: 'Test-Resultaten\: ' + "'" + encryptedData.host + "'" + '.pdf',
-                    path: 'pdf/resultaten_' + path + '.pdf'
-                }]
-        };
-        sendmail(mailOptions, res)
+        sendmail(fillPdfFileWithRightInfo(encryptedData), res);
     } else {
-        axios.post("http://localhost:8080/sendemail", req.body).then(r => {
-
+        axios.post("http://localhost:8080/sendemail", req.body).then(() => {
         })
     }
 }
@@ -45,7 +58,7 @@ router.post('/', async (req, res) => {
     const privateKey = fs.readFileSync("privateKey.key.pem", "utf8");
     console.log("toDecryptData::: " + encryptedData);
 
-    const decryptedData = decryptedDataFromAngular(encryptedData, privateKey);
+    const decryptedData = decryptAngularEncryptedDataRequest(encryptedData, privateKey);
     console.log("DECRYPTED-DATA: " + decryptedData);
     axios.post("http://localhost:8080/pdf", {host: encryptedData.host}).then(async function (response) {
         path = response.data.scan_id;
@@ -55,7 +68,7 @@ router.post('/', async (req, res) => {
     });
 })
 
-function decryptedDataFromAngular(encryptedData, privateKey) {
+function decryptAngularEncryptedDataRequest(encryptedData, privateKey) {
     // encryptedData = Buffer.from(encryptedData, "base64");
     const toDecryptData = JSON.parse(encryptedData);
     // console.log("ENCRYPTED DATA 2222:::: " + encryptedData);
@@ -74,18 +87,6 @@ function decryptedDataFromAngular(encryptedData, privateKey) {
     console.log("decrypted data: ", decryptedData.toString());
     console.log("DE RAW DATA" + decryptedData);
     return decryptedData;
-}
-
-function sendmail(mailOptions, res){
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-            console.log(error)
-            res.send(error)
-        } else {
-            res.send({"text" : 'Email sent: ' + info.response})
-            console.log('Email sent: ' + info.response);
-        }
-    });
 }
 
 module.exports = router
