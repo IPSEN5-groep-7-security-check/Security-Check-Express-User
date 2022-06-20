@@ -9,27 +9,25 @@ const axios = require("axios")
 
 router.post('/', (req, res) => {
     let scan_id = null;
-    let responsemsg = null;
     axios.get("http://localhost:8080/api/v1/analyze?host=" + req.body.host).then(function (response) {
-        responsemsg = response
-    }).finally(() =>{
-
-        ejs.renderFile(path.join(__dirname, '../views/template.ejs'), {data: responsemsg}, (err, result) => {
-            if (err) {
-                logger.log('info', 'error encountered: ' + err);
-            }
-            else {
-                try {
-                    createPDF(result, options, responsemsg.data.scan_id, {"renderDelay": 1000});
-                    scan_id = responsemsg.data.scan_id;
-                    res.send({scan_id: scan_id});
-                } catch(err) {
-                    if (err) {
-                        throw err;
+        axios.get("http://localhost:8080/api/v1/getScanResults?scan=" + response.data.scan_id).then(r => {
+            ejs.renderFile(path.join(__dirname, '../views/template.ejs'), {analyzeData: response, resultData: r}, (err, result) => {
+                if (err) {
+                    logger.log('info', 'error encountered: ' + err);
+                }
+                else {
+                    try {
+                        createPDF(result, options, response.data.scan_id, {"renderDelay": 1000});
+                        scan_id = response.data.scan_id;
+                        res.send({scan_id: scan_id});
+                    } catch(err) {
+                        if (err) {
+                            throw err;
+                        }
                     }
                 }
-            }
-        });
+            });
+        })
     })
 })
 

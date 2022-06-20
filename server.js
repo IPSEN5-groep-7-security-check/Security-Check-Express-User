@@ -23,7 +23,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const session = require('express-session');
 
-app.use(express.static('public'))
+app.use(express.static('!public'))
 
 // use session middleware
 app.use(session({
@@ -146,23 +146,26 @@ app.get("/api/v1/analyze", async (req, res) => {
   const host = req.query.host;
   const observatoryRes = await fetch(`${MOZILLA_API_URL}/analyze?host=${host}`);
   const json = await observatoryRes.json();
+  const scanId = json.scan_id;
   // We use upsert because we only want to record the log if it doesn't exist
   // already. The update object is empty because we do not want to update an
   // existing log entry.
-  await prisma.scanLog.upsert({
-    where: {
-      observatoryScanId_ip: {
-        ip: req.ip,
-        observatoryScanId: json.scan_id,
+  if (observatoryRes && scanId) {
+    await prisma.scanLog.upsert({
+      where: {
+        observatoryScanId_ip: {
+          ip: req.ip,
+          observatoryScanId: scanId,
+        },
       },
-    },
-    update: {},
-    create: {
-      ip: req.ip,
-      hostname: host,
-      observatoryScanId: json.scan_id,
-    },
-  });
+      update: {},
+      create: {
+        ip: req.ip,
+        hostname: host,
+        observatoryScanId: scanId,
+      },
+    });
+  }
   res.send(json);
 });
 
