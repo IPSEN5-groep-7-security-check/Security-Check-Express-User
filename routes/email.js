@@ -4,14 +4,16 @@ const router = express.Router()
 const nodemailer = require('nodemailer');
 const axios = require("axios");
 const fs = require("fs");
-require("crypto");
+const crypto = require("crypto");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
         user: 'getbigmarketingresultaat@gmail.com',
-        pass: 'onsMooiWachtwoord'
+        pass: 'mrdpriigoykjiada'
     }
 });
 const PRIVATE_KEY = fs.readFileSync("privateKey.key.pem", "utf8");
@@ -49,11 +51,12 @@ async function decryptUser(encryptedUserData) {
     const email = await decryptString(encryptedUserData.email);
     const host = await decryptString(encryptedUserData.host);
 
-    return {
+    const decryptedUser = {
         name: name,
         email: email,
         host: host,
     }
+    return decryptedUser
 
 }
 
@@ -71,4 +74,5 @@ function sendmail(mailOptions, res){
         }
     });
 }
+
 module.exports = router
