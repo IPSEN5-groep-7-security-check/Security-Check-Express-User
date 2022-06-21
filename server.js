@@ -6,7 +6,6 @@
 const PORT = 8080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
 
-const createError = require("http-errors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -23,7 +22,8 @@ const app = express();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const session = require('express-session');
-app.use(express.static('public'))
+
+app.use(express.static('!public'))
 
 // use session middleware
 app.use(session({
@@ -75,23 +75,6 @@ app.use("/users", users);
 app.use("/pdf", pdf);
 app.use("/sendemail", email);
 
-// I commented this out because it didn't work
-// // catch 404 and forward to error handler
-// app.use(function (req, res, next) {
-//   next(createError(404));
-// });
-
-// // error handler
-// app.use(function (err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get("env") === "development" ? err : {};
-
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render("error");
-// });
-
 async function isHostnameBanned(host) {
   const bannedHostname = await prisma.hostnameBlacklist.findUnique({
     where: {
@@ -109,9 +92,10 @@ async function isIPBanned(ip) {
   });
   if (!bannedIp) {
     return false;
-  }
-  if (bannedIp.expiresAt > Date.now()) {
-    return true;
+  } else {
+    if (bannedIp.expiresAt > Date.now()) {
+      return true;
+    }
   }
   return false;
 }
@@ -162,23 +146,26 @@ app.get("/api/v1/analyze", async (req, res) => {
   const host = req.query.host;
   const observatoryRes = await fetch(`${MOZILLA_API_URL}/analyze?host=${host}`);
   const json = await observatoryRes.json();
+  const scanId = json.scan_id;
   // We use upsert because we only want to record the log if it doesn't exist
   // already. The update object is empty because we do not want to update an
   // existing log entry.
-  await prisma.scanLog.upsert({
-    where: {
-      observatoryScanId_ip: {
-        ip: req.ip,
-        observatoryScanId: json.scan_id,
+  if (observatoryRes && scanId) {
+    await prisma.scanLog.upsert({
+      where: {
+        observatoryScanId_ip: {
+          ip: req.ip,
+          observatoryScanId: scanId,
+        },
       },
-    },
-    update: {},
-    create: {
-      ip: req.ip,
-      hostname: host,
-      observatoryScanId: json.scan_id,
-    },
-  });
+      update: {},
+      create: {
+        ip: req.ip,
+        hostname: host,
+        observatoryScanId: scanId,
+      },
+    });
+  }
   res.send(json);
 });
 
@@ -196,10 +183,8 @@ app.get("/api/v1/getScanResults", async (req, res) => {
   const observatoryRes = await fetch(
     `${MOZILLA_API_URL}/getScanResults?scan=${scanId}`
   );
-  const json = await observatoryRes.json();
-
   // TODO: modify the response body to only include preview data
-  const previewData = json;
+  const previewData = await observatoryRes.json();
 
   res.send(previewData);
 });
