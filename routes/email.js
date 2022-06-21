@@ -3,6 +3,9 @@ const router = express.Router()
 const nodemailer = require('nodemailer');
 const axios = require("axios");
 const fs = require("fs");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -18,7 +21,15 @@ router.post('/', (req, res) => {
     let path = null;
     axios.post("http://localhost:8080/pdf", {host: req.body.host}).then(async function (response) {
         path = response.data.scan_id
-
+        await prisma.User.upsert({
+            where: {
+                email: req.body.email,
+            },
+            update: {},
+            create: {
+                email: req.body.email
+            },
+        });
     }).then(() => {
         if(fs.existsSync('pdf/resultaten_'+ path +'.pdf')){
             const mailOptions = {
