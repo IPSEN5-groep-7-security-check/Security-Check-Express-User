@@ -32,9 +32,8 @@ router.post('/', (req, res) => {
 })
 
 function createPDF(html, options, name){
-    pdf.create(html, options).toFile('./pdf/resultaten_'+ name +'.pdf', function(err, res) {
+    pdf.create(html, options).toFile('./pdf/resultaten_'+ name +'.pdf', function(err) {
         if (err) return console.log(err);
-        console.log(res);
     });
 }
 

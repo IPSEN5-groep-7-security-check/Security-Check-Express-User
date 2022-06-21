@@ -4,7 +4,7 @@ const router = express.Router()
 const nodemailer = require('nodemailer');
 const axios = require("axios");
 const fs = require("fs");
-const crypto = require("crypto");
+require("crypto");
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
@@ -34,7 +34,6 @@ function emailPdfGenerator(decryptedData, path) {
 }
 
 router.post('/', async (req, res) => {
-    console.log("POST======")
     let path = null;
     const encryptedUserData = req.body;
     const decryptedUserData = await decryptUser(encryptedUserData);
@@ -50,12 +49,11 @@ async function decryptUser(encryptedUserData) {
     const email = await decryptString(encryptedUserData.email);
     const host = await decryptString(encryptedUserData.host);
 
-    const decryptedUser = {
+    return {
         name: name,
         email: email,
         host: host,
     }
-    return decryptedUser
 
 }
 

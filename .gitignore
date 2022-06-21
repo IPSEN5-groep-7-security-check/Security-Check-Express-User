@@ -44,7 +44,6 @@ Thumbs.db
 !package-lock.json
 yarn.lock
 pnpm-lock.yaml
-privateKey.key.pem
 .env
 
 # Generated PDFs
