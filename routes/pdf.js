@@ -6,7 +6,6 @@ const ejs = require('ejs');
 const path = require("path");
 const logger = require("debug");
 const axios = require("axios")
-
 router.post('/', (req, res) => {
     let scan_id = null;
     axios.get("http://localhost:8080/api/v1/analyze?host=" + req.body.host).then(function (response) {
@@ -30,11 +29,9 @@ router.post('/', (req, res) => {
         })
     })
 })
-
 function createPDF(html, options, name){
     pdf.create(html, options).toFile('./pdf/resultaten_'+ name +'.pdf', function(err) {
         if (err) return console.log(err);
     });
 }
-
 module.exports = router

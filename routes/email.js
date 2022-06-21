@@ -71,5 +71,4 @@ function sendmail(mailOptions, res){
         }
     });
 }
-
 module.exports = router
