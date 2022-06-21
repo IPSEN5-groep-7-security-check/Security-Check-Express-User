@@ -1,7 +1,4 @@
-// TODO: better error handling
-// TODO: project organization
-// TODO: add tests
-// TODO: handle imports better
+
 
 const PORT = 8080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
@@ -198,12 +195,10 @@ app.get("/api/v1/getScanResults", async (req, res) => {
   );
   const json = await observatoryRes.json();
 
-  // TODO: modify the response body to only include preview data
   const previewData = json;
 
   res.send(previewData);
 });
 
 app.listen(PORT, function () {
-  console.log(`Backend Application listening at http://localhost:${PORT}`);
 });
