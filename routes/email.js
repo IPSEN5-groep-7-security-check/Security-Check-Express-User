@@ -1,3 +1,4 @@
+const forge = require('node-forge')
 const express = require('express')
 const router = express.Router()
 const nodemailer = require('nodemailer');
@@ -15,8 +16,9 @@ const transporter = nodemailer.createTransport({
         pass: 'mrdpriigoykjiada'
     }
 });
+const PRIVATE_KEY = fs.readFileSync("privateKey.key.pem", "utf8");
 
-function emailPdfGenerator(encryptedData) {
+function emailPdfGenerator(encryptedData, path) {
     if (fs.existsSync('pdf/resultaten_' + path + '.pdf')) {
         const mailOptions = {
             from: 'getbigmarketingresultaat@gmail.com',
@@ -31,49 +33,53 @@ function emailPdfGenerator(encryptedData) {
         };
         sendmail(mailOptions, res)
     } else {
-        axios.post("http://localhost:8080/sendemail", req.body).then(r => {
+        axios.post("http://localhost:8080/sendemail", encryptedData).then(r => {
 
         })
     }
 }
 
 router.post('/', async (req, res) => {
+    console.log("POST======")
     let path = null;
-    const encryptedData = req.body;
-    console.log("RECEIVED ENCRYPTED BODY: " + encryptedData);
-
-    const privateKey = fs.readFileSync("privateKey.key.pem", "utf8");
-    console.log("toDecryptData::: " + encryptedData);
-
-    const decryptedData = decryptedDataFromAngular(encryptedData, privateKey);
-    console.log("DECRYPTED-DATA: " + decryptedData);
-    axios.post("http://localhost:8080/pdf", {host: encryptedData.host}).then(async function (response) {
+    const encryptedUserData = req.body;
+    // console.log("RECEIVED ENCRYPTED BODY: " + JSON.stringify(encryptedUserData));
+    // console.log("toDecryptData::: " + encryptedUserData);
+    // console.log("IS NAME === HOST?1 ", encryptedUserData.name === encryptedUserData.host);
+    const decryptedUserData = await decryptUser(encryptedUserData)
+    // console.log("IS NAME === HOST?2 ", encryptedUserData.name === encryptedUserData.host);
+    // console.log("DECRYPTED-DATA: " + JSON.stringify(decryptedUserData));
+    // console.log("IS NAME === HOST?3 ", encryptedUserData.name === encryptedUserData.host);
+    axios.post("http://localhost:8080/pdf", {host: decryptedUserData.host}).then(async function (response) {
         path = response.data.scan_id;
 
     }).then(() => {
-        emailPdfGenerator(encryptedData);
+        emailPdfGenerator(decryptedUserData, path);
     });
 })
 
-function decryptedDataFromAngular(encryptedData, privateKey) {
-    // encryptedData = Buffer.from(encryptedData, "base64");
-    const toDecryptData = JSON.parse(encryptedData);
-    // console.log("ENCRYPTED DATA 2222:::: " + encryptedData);
-    console.log("ENCRYPTED DATA 2222:::: " + body);
-    const decryptedData = crypto.privateDecrypt(
-        {
-            key: privateKey,
-            // In order to decrypt the data, we need to specify the
-            // same hashing function and padding scheme that we used to
-            // encrypt the data in the previous step
-            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-            oaepHash: "sha256",
-        },
-        toDecryptData
-    );
-    console.log("decrypted data: ", decryptedData.toString());
-    console.log("DE RAW DATA" + decryptedData);
-    return decryptedData;
+async function decryptUser(encryptedUserData) {
+    const name = await decryptString(encryptedUserData.name);
+    // console.log("NAME::: ", encryptedUserData.name.substring(0,6)," ||||| ",name);
+    const email = await decryptString(encryptedUserData.email);
+    // console.log("EMAIL::: ", encryptedUserData.email.substring(0,6)," ||||| ",email);
+    const host = await decryptString(encryptedUserData.host);
+    // console.log("HOST::: ", encryptedUserData.host.substring(0,6)," ||||| ",host);
+
+    const decryptedUser = {
+        name: name,
+        email: email,
+        host: host,
+    }
+    console.log("DECRYPTED USERRRR: ", decryptedUser);
+    return decryptedUser
+
+}
+
+async function decryptString(encryptedString) {
+    const rsa = forge.pki.privateKeyFromPem(PRIVATE_KEY);
+    console.log("STRING LEN::: ", encryptedString.length)
+    return await rsa.decrypt(encryptedString);
 }
 
 function sendmail(mailOptions, res){
