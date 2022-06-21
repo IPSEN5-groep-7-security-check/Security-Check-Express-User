@@ -18,24 +18,20 @@ const transporter = nodemailer.createTransport({
 });
 const PRIVATE_KEY = fs.readFileSync("privateKey.key.pem", "utf8");
 
-function emailPdfGenerator(encryptedData, path) {
+function emailPdfGenerator(decryptedData, path) {
     if (fs.existsSync('pdf/resultaten_' + path + '.pdf')) {
         const mailOptions = {
             from: 'getbigmarketingresultaat@gmail.com',
-            to: encryptedData.email,
+            to: decryptedData.email,
             subject: "Uw scan resultaten",
-            text: "Beste " + encryptedData.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
+            text: "Beste " + decryptedData.name + ",\n\n In de PDF vindt u de resultaten van de security check.\n\n Met vriendelijke groet, \n\n Get Big Marketing",
             attachments: [
                 {
-                    filename: 'Test-Resultaten\: ' + "'" + encryptedData.host + "'" + '.pdf',
+                    filename: 'Test-Resultaten\: ' + "'" + decryptedData.host + "'" + '.pdf',
                     path: 'pdf/resultaten_' + path + '.pdf'
                 }]
         };
-        sendmail(mailOptions, res)
-    } else {
-        axios.post("http://localhost:8080/sendemail", encryptedData).then(r => {
-
-        })
+        sendmail(mailOptions, decryptedData)
     }
 }
 
@@ -46,15 +42,14 @@ router.post('/', async (req, res) => {
     // console.log("RECEIVED ENCRYPTED BODY: " + JSON.stringify(encryptedUserData));
     // console.log("toDecryptData::: " + encryptedUserData);
     // console.log("IS NAME === HOST?1 ", encryptedUserData.name === encryptedUserData.host);
-    const decryptedUserData = await decryptUser(encryptedUserData)
+    const decryptedUserData = await decryptUser(encryptedUserData);
     // console.log("IS NAME === HOST?2 ", encryptedUserData.name === encryptedUserData.host);
     // console.log("DECRYPTED-DATA: " + JSON.stringify(decryptedUserData));
     // console.log("IS NAME === HOST?3 ", encryptedUserData.name === encryptedUserData.host);
     axios.post("http://localhost:8080/pdf", {host: decryptedUserData.host}).then(async function (response) {
         path = response.data.scan_id;
-
     }).then(() => {
-        emailPdfGenerator(decryptedUserData, path);
+        emailPdfGenerator(decryptedUserData, path, res);
     });
 })
 
@@ -83,7 +78,7 @@ async function decryptString(encryptedString) {
 }
 
 function sendmail(mailOptions, res){
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
             console.log(error)
             res.send(error)
