@@ -18,17 +18,38 @@ router.post('/', (req, res) => {
                     logger.log('info', 'error encountered: ' + err);
                 } else {
                     try {
-                        createPDF(result, options, response.data.scan_id, {"renderDelay": 1000});
+                        createPDF(result, options, response.data.scan_id);
                         scan_id = response.data.scan_id;
-                        // await prisma.Report.create({
+                        // let user = await prisma.user.findUnique({
+                        //     where: {
+                        //         email: req.body.email
+                        //     },
+                        // })
+                        // if (!user) {
+                        //     user = await prisma.user.create(
+                        //         email: req.body.email;
+                        //     )
+                        // }
+                        // const user = await prisma.user.upsert({
+                        //     where: {
+                        //         email: req.body.email,
+                        //     },
+                        //     update: {},
+                        //     create: {
+                        //         email: req.body.email
+                        //     },
+                        // });
+                        // prisma.report.create({
                         //     data: {
                         //         hostname: req.body.host,
                         //         score: response.data.score,
-                        //         // user: req.body.email,
-                        //         // userSubmittedName: req.body.name,
-                        //         reportData: response.data
+                        //         reportData: response.data,
+                        //         user: user,
+                        //         userSubmittedName: req.body.name,
                         //     },
-                        // });
+                        // }).then(() => {
+                        //
+                        // })
                         res.send({scan_id: scan_id});
                     } catch (err) {
                         if (err) {
