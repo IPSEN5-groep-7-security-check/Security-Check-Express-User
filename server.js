@@ -1,9 +1,6 @@
 const PORT = 8080;
-import cors from "cors";
-
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
-
-const createError = require("http-errors");
+require("http-errors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -12,9 +9,7 @@ const users = require("./routes/users");
 const pdf = require("./routes/pdf");
 const email = require("./routes/email");
  const cors = require("cors");
-
-const fetch = (...args) =>
-    import("node-fetch").then(({ default: fetch }) => fetch(...args));
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const express = require("express");
 const app = express();
 const { PrismaClient } = require("@prisma/client");
@@ -22,6 +17,7 @@ const prisma = new PrismaClient();
 const session = require('express-session');
 app.use(express.static('public'))
 app.use(cors());
+
 
 // use session middleware
 app.use(session({secret: 'secret', resave: false, saveUninitialized: true, cookie: { maxAge: 60000 }}));
@@ -51,14 +47,10 @@ app.use(function (req, res, next) {
   // Pass to next layer of middleware
   next();
 });
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(logger("dev"));
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 app.use("/", index);
 app.use("/users", users);
 app.use("/pdf", pdf);
