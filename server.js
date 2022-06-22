@@ -1,5 +1,3 @@
-
-
 const PORT = 8080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
 require("http-errors");
@@ -11,7 +9,6 @@ const users = require("./routes/users");
 const pdf = require("./routes/pdf");
 const email = require("./routes/email");
 const cors = require("cors");
-
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const express = require("express");
@@ -20,7 +17,6 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const session = require('express-session');
 app.use(express.static('public'))
-
 // use session middleware
 app.use(session({
   secret: 'secret',
@@ -28,49 +24,37 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 60000 }
 }));
-
 app.use(cors({ origin: true, credentials: true }));
-
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", "*");
-
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
-
   // Request headers you wish to allow
   res.setHeader(
     "Access-Control-Allow-Headers",
     "X-Requested-With,content-type"
   );
-
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
   res.setHeader("Access-Control-Allow-Credentials", true);
-
   // Pass to next layer of middleware
   next();
 });
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-
-
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 app.use("/", index);
 app.use("/users", users);
 app.use("/pdf", pdf);
 app.use("/sendemail", email);
-
 async function isHostnameBanned(host) {
   const bannedHostname = await prisma.hostnameBlacklist.findUnique({
     where: {
@@ -79,7 +63,6 @@ async function isHostnameBanned(host) {
   });
   return bannedHostname ? true : false;
 }
-
 async function isIPBanned(ip) {
   const bannedIp = await prisma.iPBlacklist.findUnique({
     where: {
@@ -94,7 +77,6 @@ async function isIPBanned(ip) {
   }
   return false;
 }
-
 // INVOKE ASSESSMENT
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#invoke-assessment
 // Used to invoke a new scan of a website. By default, the HTTP Observatory
@@ -129,7 +111,6 @@ app.post("/api/v1/analyze", async (req, res) => {
     res.send(json);
   }
 });
-
 // RETRIEVE ASSESSMENT
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#retrieve-assessment
 // This is used to retrieve the results of an existing, ongoing, or completed
@@ -160,7 +141,6 @@ app.get("/api/v1/analyze", async (req, res) => {
   });
   res.send(json);
 });
-
 // RETRIEVE TEST RESULTS
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#retrieve-test-results
 // Each scan consists of a variety of subtests, including Content Security
@@ -181,6 +161,5 @@ app.get("/api/v1/getScanResults", async (req, res) => {
 
   res.send(previewData);
 });
-
 app.listen(PORT, function () {
 });
