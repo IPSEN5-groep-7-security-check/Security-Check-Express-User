@@ -42,11 +42,11 @@ router.post('/', async (req, res) => {
         path = response.data.scan_id;
         await prisma.User.upsert({
             where: {
-                email: req.body.email,
+                email: decryptedUserData.email,
             },
             update: {},
             create: {
-                email: req.body.email
+                email: decryptedUserData.email
             },
         });
     }).then(() => {
