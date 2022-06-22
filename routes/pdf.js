@@ -6,52 +6,20 @@ const ejs = require('ejs');
 const path = require("path");
 const logger = require("debug");
 const axios = require("axios")
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-
 router.post('/', (req, res) => {
     let scan_id = null;
     axios.get("http://localhost:8080/api/v1/analyze?host=" + req.body.host).then(function (response) {
         axios.get("http://localhost:8080/api/v1/getScanResults?scan=" + response.data.scan_id).then(r => {
-            ejs.renderFile(path.join(__dirname, '../views/template.ejs'), {analyzeData: response, resultData: r}, async (err, result) => {
+            ejs.renderFile(path.join(__dirname, '../views/template.ejs'), {analyzeData: response, resultData: r}, (err, result) => {
                 if (err) {
                     logger.log('info', 'error encountered: ' + err);
-                } else {
+                }
+                else {
                     try {
-                        createPDF(result, options, response.data.scan_id);
+                        createPDF(result, options, response.data.scan_id, {"renderDelay": 1000});
                         scan_id = response.data.scan_id;
-                        // let user = await prisma.user.findUnique({
-                        //     where: {
-                        //         email: req.body.email
-                        //     },
-                        // })
-                        // if (!user) {
-                        //     user = await prisma.user.create(
-                        //         email: req.body.email;
-                        //     )
-                        // }
-                        // const user = await prisma.user.upsert({
-                        //     where: {
-                        //         email: req.body.email,
-                        //     },
-                        //     update: {},
-                        //     create: {
-                        //         email: req.body.email
-                        //     },
-                        // });
-                        // prisma.report.create({
-                        //     data: {
-                        //         hostname: req.body.host,
-                        //         score: response.data.score,
-                        //         reportData: response.data,
-                        //         user: user,
-                        //         userSubmittedName: req.body.name,
-                        //     },
-                        // }).then(() => {
-                        //
-                        // })
                         res.send({scan_id: scan_id});
-                    } catch (err) {
+                    } catch(err) {
                         if (err) {
                             throw err;
                         }
@@ -61,12 +29,9 @@ router.post('/', (req, res) => {
         })
     })
 })
-
 function createPDF(html, options, name){
-    pdf.create(html, options).toFile('./pdf/resultaten_'+ name +'.pdf', function(err, res) {
+    pdf.create(html, options).toFile('./pdf/resultaten_'+ name +'.pdf', function(err) {
         if (err) return console.log(err);
-        console.log(res);
     });
 }
-
 module.exports = router
