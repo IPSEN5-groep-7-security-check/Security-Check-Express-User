@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
     secure: true,
     auth: {
         user: 'getbigmarketingresultaat@gmail.com',
-        pass: 'mrdpriigoykjiada'
+        pass: 'onsMooiWachtwoord'
     }
 });
 const PRIVATE_KEY = fs.readFileSync("privateKey.key.pem", "utf8");
