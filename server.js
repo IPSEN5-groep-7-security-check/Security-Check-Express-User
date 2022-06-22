@@ -29,8 +29,8 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 60000 }
 }));
-
-app.use(cors({ origin: true, credentials: true }));
+// app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: false, credentials: true }));
 
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
