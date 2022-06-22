@@ -2,8 +2,7 @@
 
 const PORT = 8080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
-
-const createError = require("http-errors");
+require("http-errors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -29,8 +28,8 @@ app.use(session({
   saveUninitialized: true,
   cookie: { maxAge: 60000 }
 }));
-// app.use(cors({ origin: true, credentials: true }));
-app.use(cors({ origin: false, credentials: true }));
+
+app.use(cors({ origin: true, credentials: true }));
 
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
