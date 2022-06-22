@@ -28,7 +28,7 @@ app.use(cors({ origin: true, credentials: true }));
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "https://security-check-angular-user.vercel.app/");
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
