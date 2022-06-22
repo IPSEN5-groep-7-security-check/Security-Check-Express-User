@@ -19,7 +19,7 @@
     "pug": "3.0.1"
   },
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "name": "security-check-express-user",
   "description": "",
