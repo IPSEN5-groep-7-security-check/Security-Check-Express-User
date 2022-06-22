@@ -1,5 +1,4 @@
 const PORT = 8080;
-import cors from "cors";
 
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
 
