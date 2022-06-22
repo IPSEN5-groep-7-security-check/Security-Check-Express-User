@@ -17,7 +17,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const session = require('express-session');
 app.use(express.static('public'))
-app.use(cors());
+// app.use(cors());
 
 // use session middleware
 app.use(session({secret: 'secret', resave: false, saveUninitialized: true, cookie: { maxAge: 60000 }}));
