@@ -4,18 +4,20 @@ const router = express.Router()
 const nodemailer = require('nodemailer');
 const axios = require("axios");
 const fs = require("fs");
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
         user: 'getbigmarketingresultaat@gmail.com',
-        pass: 'onsMooiWachtwoord'
+        pass: 'mrdpriigoykjiada'
     }
 });
 const PRIVATE_KEY = fs.readFileSync("privateKey.key.pem", "utf8");
 
-function emailPdfGenerator(decryptedData, path) {
+function emailPdfGenerator(decryptedData, path, res) {
     if (fs.existsSync('pdf/resultaten_' + path + '.pdf')) {
         const mailOptions = {
             from: 'getbigmarketingresultaat@gmail.com',
@@ -28,7 +30,7 @@ function emailPdfGenerator(decryptedData, path) {
                     path: 'pdf/resultaten_' + path + '.pdf'
                 }]
         };
-        sendmail(mailOptions, decryptedData)
+        sendmail(mailOptions, res)
     }
 }
 
@@ -38,6 +40,15 @@ router.post('/', async (req, res) => {
     const decryptedUserData = await decryptUser(encryptedUserData);
     axios.post("http://localhost:8080/pdf", {host: decryptedUserData.host}).then(async function (response) {
         path = response.data.scan_id;
+        await prisma.User.upsert({
+            where: {
+                email: decryptedUserData.email,
+            },
+            update: {},
+            create: {
+                email: decryptedUserData.email
+            },
+        });
     }).then(() => {
         emailPdfGenerator(decryptedUserData, path, res);
     });
