@@ -8,7 +8,6 @@ const users = require("./routes/users");
 const pdf = require("./routes/pdf");
 const email = require("./routes/email");
  const cors = require("cors");
-
 const fetch = (...args) =>
     import("node-fetch").then(({ default: fetch }) => fetch(...args));
 const express = require("express");
