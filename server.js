@@ -24,13 +24,7 @@ app.use(express.static('public'))
 app.use(cors());
 
 // use session middleware
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 60000 }
-}));
-
+app.use(session({secret: 'secret', resave: false, saveUninitialized: true, cookie: { maxAge: 60000 }}));
 // app.use(cors({ origin: true, credentials: true }));
 
 // Add headers before the routes are defined
