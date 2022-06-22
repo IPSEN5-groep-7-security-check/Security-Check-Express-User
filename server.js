@@ -1,9 +1,4 @@
-// TODO: better error handling
-// TODO: project organization
-// TODO: add tests
-// TODO: handle imports better
-
-// const PORT = 8080;
+const PORT = 8080;
 import cors from "cors";
 
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
@@ -65,9 +60,6 @@ app.use(session({
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-
-
 app.use(logger("dev"));
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: false }));
@@ -77,24 +69,6 @@ app.use("/", index);
 app.use("/users", users);
 app.use("/pdf", pdf);
 app.use("/sendemail", email);
-
-// I commented this out because it didn't work
-// // catch 404 and forward to error handler
-// app.use(function (req, res, next) {
-//   next(createError(404));
-// });
-
-// // error handler
-// app.use(function (err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get("env") === "development" ? err : {};
-
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render("error");
-// });
-
 async function isHostnameBanned(host) {
   const bannedHostname = await prisma.hostnameBlacklist.findUnique({
     where: {
@@ -103,7 +77,6 @@ async function isHostnameBanned(host) {
   });
   return bannedHostname ? true : false;
 }
-
 async function isIPBanned(ip) {
   const bannedIp = await prisma.iPBlacklist.findUnique({
     where: {
@@ -118,7 +91,6 @@ async function isIPBanned(ip) {
   }
   return false;
 }
-
 // INVOKE ASSESSMENT
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#invoke-assessment
 // Used to invoke a new scan of a website. By default, the HTTP Observatory
@@ -153,7 +125,6 @@ app.post("/api/v1/analyze", async (req, res) => {
     res.send(json);
   }
 });
-
 // RETRIEVE ASSESSMENT
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#retrieve-assessment
 // This is used to retrieve the results of an existing, ongoing, or completed
@@ -187,7 +158,6 @@ app.get("/api/v1/analyze", async (req, res) => {
   }
   res.send(json);
 });
-
 // RETRIEVE TEST RESULTS
 // See: https://github.com/mozilla/http-observatory/blob/master/httpobs/docs/api.md#retrieve-test-results
 // Each scan consists of a variety of subtests, including Content Security
@@ -203,13 +173,10 @@ app.get("/api/v1/getScanResults", async (req, res) => {
       `${MOZILLA_API_URL}/getScanResults?scan=${scanId}`
   );
   const json = await observatoryRes.json();
-
-  // TODO: modify the response body to only include preview data
   const previewData = json;
 
   res.send(previewData);
 });
-
 app.listen(PORT, function () {
   console.log(`Backend Application listening at http://localhost:${PORT}`);
 });
