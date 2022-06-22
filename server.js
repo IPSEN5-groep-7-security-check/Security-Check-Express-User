@@ -2,8 +2,7 @@
 
 const PORT = 8080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
-
-const createError = require("http-errors");
+require("http-errors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
