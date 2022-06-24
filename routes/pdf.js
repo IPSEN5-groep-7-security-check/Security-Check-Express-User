@@ -8,8 +8,8 @@ const logger = require("debug");
 const axios = require("axios")
 router.post('/', (req, res) => {
     let scan_id = null;
-    axios.get("/api/v1/analyze?host=" + req.body.host).then(function (response) {
-        axios.get("/api/v1/getScanResults?scan=" + response.data.scan_id).then(r => {
+    axios.get("https://security-check-user-express.herokuapp.com/api/v1/analyze?host=" + req.body.host).then(function (response) {
+        axios.get("https://security-check-user-express.herokuapp.com/api/v1/getScanResults?scan=" + response.data.scan_id).then(r => {
             ejs.renderFile(path.join(__dirname, '../views/template.ejs'), {analyzeData: response, resultData: r}, (err, result) => {
                 if (err) {
                     logger.log('info', 'error encountered: ' + err);

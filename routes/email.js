@@ -38,7 +38,7 @@ router.post('/', async (req, res) => {
     let path = null;
     const encryptedUserData = req.body;
     const decryptedUserData = await decryptUser(encryptedUserData);
-    axios.post("/pdf", {host: decryptedUserData.host}).then(async function (response) {
+    axios.post("https://security-check-user-express.herokuapp.com/pdf", {host: decryptedUserData.host}).then(async function (response) {
         path = response.data.scan_id;
         await prisma.User.upsert({
             where: {
