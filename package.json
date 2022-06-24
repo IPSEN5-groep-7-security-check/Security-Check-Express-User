@@ -28,7 +28,7 @@
   },
   "scripts": {
     "start": "node server.js",
-    "heroku-postbuild": "prisma generate"
+    "prepare": "prisma generate"
   },
   "name": "security-check-express-user",
   "description": "",
