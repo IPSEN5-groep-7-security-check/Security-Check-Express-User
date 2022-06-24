@@ -27,8 +27,7 @@
     "prisma": "^3.15.2"
   },
   "scripts": {
-    "start": "node server.js",
-    "postinstall": "ng build --aot --prod"
+    "start": "node server.js"
   },
   "name": "security-check-express-user",
   "description": "",
