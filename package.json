@@ -23,7 +23,8 @@
     "pdfkit-table": "^0.1.95",
     "public": "^0.1.5",
     "pug": "3.0.1",
-    "tailwindcss": "^3.0.24"
+    "tailwindcss": "^3.0.24",
+    "prisma": "^3.15.2"
   },
   "scripts": {
     "start": "node server.js"
