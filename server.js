@@ -29,6 +29,7 @@ app.use(
 );
 
 app.use(cors({ origin: "https://security-check-angular-user.vercel.app" }));
+app.options("*", cors()); // include before other routes
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -56,13 +57,11 @@ async function isIPBanned(ip) {
       ip: ip,
     },
   });
-  if (!bannedIp) {
-    return false;
-  }
   if (bannedIp.expiresAt > Date.now()) {
     return true;
+  } else {
+    return false;
   }
-  return false;
 }
 
 // INVOKE ASSESSMENT
