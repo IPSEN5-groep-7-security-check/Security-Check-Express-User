@@ -1,7 +1,7 @@
 
 
 // const PORT = 8080;
-const PORT = 12080;
+// const PORT = 12080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
 require("http-errors");
 const path = require("path");
@@ -189,5 +189,7 @@ app.get('/*', function(req, res) {
   res.sendFile(path.join(__dirname + '/dist/index.html'));
 });
 
-app.listen(PORT, function () {
-});
+// app.listen(PORT, function () {
+// });
+
+app.listen(process.env.PORT || 8080)
