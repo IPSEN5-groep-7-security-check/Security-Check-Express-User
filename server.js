@@ -60,7 +60,7 @@ app.use(function (req, res, next) {
 });
 
 app.set("view engine", "ejs");
-// app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "views"));
 
 
 
@@ -69,7 +69,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/", index);
+// app.use("/", index);
 app.use("/users", users);
 app.use("/pdf", pdf);
 app.use("/sendemail", email);
