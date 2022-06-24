@@ -28,9 +28,7 @@ app.use(
   })
 );
 
-app.use(
-  cors({ origin: "https://security-check-angular-user.vercel.app/home" })
-);
+app.use(cors({ origin: "https://security-check-angular-user.vercel.app" }));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
