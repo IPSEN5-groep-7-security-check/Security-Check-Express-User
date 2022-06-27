@@ -1,5 +1,4 @@
 
-
 // const PORT = 8080;
 // const PORT = 12080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
@@ -22,7 +21,6 @@ const prisma = new PrismaClient();
 const session = require('express-session');
 app.use(express.static('public'))
 app.use(express.static(__dirname + '/dist'));
-
 
 // use session middleware
 app.use(session({
@@ -61,8 +59,6 @@ app.use(function (req, res, next) {
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-
 
 app.use(logger("dev"));
 app.use(express.json());
