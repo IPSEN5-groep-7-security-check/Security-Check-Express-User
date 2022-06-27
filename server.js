@@ -1,4 +1,3 @@
-
 // const PORT = 8080;
 // const PORT = 12080;
 const MOZILLA_API_URL = "https://http-observatory.security.mozilla.org/api/v1/";
@@ -18,17 +17,19 @@ const express = require("express");
 const app = express();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const session = require('express-session');
-app.use(express.static('public'))
-app.use(express.static(__dirname + '/dist'));
+const session = require("express-session");
+app.use(express.static("public"));
+app.use(express.static(__dirname + "/dist"));
 
 // use session middleware
-app.use(session({
-  secret: 'secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 60000 }
-}));
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 },
+  })
+);
 
 app.use(cors({ origin: true, credentials: true }));
 
@@ -140,24 +141,32 @@ app.get("/api/v1/analyze", async (req, res) => {
   const host = req.query.host;
   const observatoryRes = await fetch(`${MOZILLA_API_URL}/analyze?host=${host}`);
   const json = await observatoryRes.json();
+  const scanId = json.scan_id;
+  console.log(err);
   // We use upsert because we only want to record the log if it doesn't exist
   // already. The update object is empty because we do not want to update an
   // existing log entry.
-  await prisma.scanLog.upsert({
-    where: {
-      observatoryScanId_ip: {
-        ip: req.ip,
-        observatoryScanId: json.scan_id,
-      },
-    },
-    update: {},
-    create: {
-      ip: req.ip,
-      hostname: host,
-      observatoryScanId: json.scan_id,
-    },
-  });
-  res.send(json);
+  if (scanId) {
+    try {
+      await prisma.scanLog.upsert({
+        where: {
+          observatoryScanId_ip: {
+            ip: req.ip,
+            observatoryScanId: scanId,
+          },
+        },
+        update: {},
+        create: {
+          ip: req.ip,
+          hostname: host,
+          observatoryScanId: scanId,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    res.send(json);
+  }
 });
 
 // RETRIEVE TEST RESULTS
@@ -181,11 +190,11 @@ app.get("/api/v1/getScanResults", async (req, res) => {
   res.send(previewData);
 });
 
-app.get('/*', function(req, res) {
-  res.sendFile(path.join('/dist/index.html'));
+app.get("/*", function (req, res) {
+  res.sendFile(path.join("/dist/index.html"));
 });
 
 // app.listen(PORT, function () {
 // });
 
-app.listen(process.env.PORT || 8080)
+app.listen(process.env.PORT || 8080);
