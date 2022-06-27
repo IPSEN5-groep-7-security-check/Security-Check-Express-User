@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
     port: 465,
     secure: true,
     auth: {
-        user: 'getbigmarketingresultaat@gmail.com',
-        pass: 'mrdpriigoykjiada'
+        user: 'getbigmarketing2@gmail.com',
+        pass: 'zagmasaoafwwjpxj'
     }
 });
 const apiURL = "https://security-check-user-express.herokuapp.com";
