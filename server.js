@@ -142,7 +142,6 @@ app.get("/api/v1/analyze", async (req, res) => {
   const observatoryRes = await fetch(`${MOZILLA_API_URL}/analyze?host=${host}`);
   const json = await observatoryRes.json();
   const scanId = json.scan_id;
-  console.log(err);
   // We use upsert because we only want to record the log if it doesn't exist
   // already. The update object is empty because we do not want to update an
   // existing log entry.
